@@ -51,6 +51,21 @@ def output_password(name, username, password):
         file.close()
         return main_menu()
     elif option == "0":
+        print(boxen(
+                "Are you sure you want to exit? (Y/N)",
+                title="Exit",
+                subtitle="Input below",
+                subtitle_alignment="center",
+                padding=1,
+                margin=1,
+                color="cyan"    
+                )
+            )
+        answer = input("Input here: ")
+        if answer == "Y":
+            exit()
+        elif answer == "N":
+            return output_password(name, username, password)
         exit()
 
 def settings():
@@ -77,7 +92,21 @@ def settings():
         print("Return to main menu...")
         return main_menu()
     elif option2 == "0":
-        exit()
+        print(boxen(
+                "Are you sure you want to exit? (Y/N)",
+                title="Exit",
+                subtitle="Input below",
+                subtitle_alignment="center",
+                padding=1,
+                margin=1,
+                color="cyan"    
+                )
+            )
+        answer = input("Input here: ")
+        if answer == "Y":
+            exit()
+        elif answer == "N":
+            return settings()
         
 def adv_settings():
     print(
