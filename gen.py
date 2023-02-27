@@ -3,6 +3,7 @@ import string
 import csv
 from pyboxen import boxen
 import pyperclip
+import zmq
 
 
 def generate_password(length: int = 20, chars: bool = True, nums: bool = True, puncs: bool = True):
@@ -25,12 +26,25 @@ def generate_password(length: int = 20, chars: bool = True, nums: bool = True, p
 
     return new_password
 
+def password_strength(password):
+    context = zmq.Context()
+
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5555")
+
+    socket.send_string(password)
+
+    message = socket.recv()
+    
+    return(message.decode())
+
 def output_password(name, username, password):
     print(boxen(
                 password,
                 "",
                 "1: Copy to clipboard",
                 "2: Save password to .csv",
+                "3: Check password strength",
                 "0: Exit",
                 title="Generated password below:",
                 subtitle="Select an option",
@@ -49,7 +63,10 @@ def output_password(name, username, password):
         writer = csv.writer(file)
         writer.writerow(data)
         file.close()
-        return main_menu()
+    elif option == "3":
+        password_score = password_strength(password)
+        print(password_score)
+        output_password(name, username, password)
     elif option == "0":
         print(boxen(
                 "Are you sure you want to exit? (Y/N)",
@@ -66,7 +83,6 @@ def output_password(name, username, password):
             exit()
         elif answer == "N":
             return output_password(name, username, password)
-        exit()
 
 def settings():
     print(boxen(
