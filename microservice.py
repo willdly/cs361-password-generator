@@ -5,6 +5,7 @@ from password_strength import PasswordStats
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
+print("Microservice has started...")
 
 while True:
     message = socket.recv()
