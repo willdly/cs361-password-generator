@@ -5,6 +5,9 @@ from pyboxen import boxen
 import pyperclip
 import zmq
 from prettytable import from_csv
+import pandas as pd
+import webbrowser
+import validators
 
 
 def generate_password(length: int = 20, chars: bool = True, nums: bool = True, puncs: bool = True):
@@ -63,7 +66,9 @@ def output_password(name, url, username, password):
         pyperclip.copy(password)
         output_password(name, url, username, password)
     elif option == "2":
-        data = [name, url, username, password]
+        df = pd.read_csv('login_storage.csv')
+        row_number = len(df.index) + 1
+        data = [row_number, name, url, username, password]
         file = open('login_storage.csv', 'a', newline='')
         writer = csv.writer(file)
         writer.writerow(data)
@@ -205,7 +210,44 @@ def displayCSV():
     with open('login_storage.csv', "r") as fp:
         x = from_csv(fp)
     print(x)
-    main_menu()
+    print(
+        boxen(
+            "1: Open URL to specific login (Copy password to clipboard)",
+            "2: Return to main menu",
+            "0: Exit",
+            subtitle="Select an option",
+            subtitle_alignment="center",
+            padding=1,
+            margin=1,
+            color="cyan"
+        )
+    )
+    option = input("Input here: ")
+    if option == "1":
+        row = input("Row number: ")
+        openURL(row)
+    elif option == "2":
+        main_menu()
+    elif option == "0":
+        exit()
+
+
+def openURL(number):
+    num = number
+    with open('login_storage.csv') as csvfile:
+        reader = csv.reader(csvfile, delimiter=",")
+        for row in reader:
+            x = row[0]
+            y = row[2]
+            z = row[4]
+            if x == num:
+                if y == '':
+                    print("No URL to open.")
+                    exit()
+                if not (validators.url(y)):
+                    print("URL is not valid")
+                pyperclip.copy(z)
+                webbrowser.open(y)
 
 
 def main_menu():
